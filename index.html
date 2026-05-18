@@ -19,6 +19,7 @@
     :root {
       --white: #ffffff;
       --lime: #dcea4b;
+      --lime-glow: rgba(220, 234, 75, 0.42);
       --safe-top: env(safe-area-inset-top);
       --safe-bottom: env(safe-area-inset-bottom);
       --safe-left: env(safe-area-inset-left);
@@ -30,21 +31,26 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    html,
-    body {
+    html {
       margin: 0;
       width: 100%;
-      min-height: 100%;
+      height: 100%;
       overflow: hidden;
-      background: #07122c;
-      color: var(--white);
-      font-family: "Intro Friday", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow-x: hidden;
     }
 
     body {
+      margin: 0;
+      width: 100%;
+      height: 100svh;
       min-height: 100svh;
+      overflow: hidden;
+      overflow-x: hidden;
       position: fixed;
       inset: 0;
+      background: #07122c;
+      color: var(--white);
+      font-family: "Intro Friday", -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
     button {
@@ -53,194 +59,320 @@
       font: inherit;
       color: inherit;
       background: none;
+      cursor: pointer;
+      touch-action: manipulation;
     }
 
     .app {
       position: relative;
       width: 100%;
+      height: 100svh;
       min-height: 100svh;
       overflow: hidden;
-      background-image: url("./BG.png");
-      background-size: cover;
-      background-position: center center;
-      background-repeat: no-repeat;
+      overflow-x: hidden;
+      background: url("./BG.png") center center / cover no-repeat;
     }
 
     .screen {
       position: absolute;
       inset: 0;
+      z-index: 1;
       display: none;
       width: 100%;
+      height: 100svh;
       min-height: 100svh;
-      padding:
-        calc(28px + var(--safe-top))
-        calc(24px + var(--safe-right))
-        calc(28px + var(--safe-bottom))
-        calc(24px + var(--safe-left));
-      animation: screenIn 420ms ease both;
+      overflow: hidden;
+      overflow-x: hidden;
+      animation: screenIn 400ms cubic-bezier(0.22, 1, 0.36, 1) both;
     }
 
     .screen.active {
       display: flex;
     }
 
+    /* —— Старт —— */
     .start-screen {
       flex-direction: column;
       align-items: center;
       text-align: center;
+      padding:
+        calc(var(--safe-top))
+        calc(20px + var(--safe-right))
+        calc(20px + var(--safe-bottom))
+        calc(20px + var(--safe-left));
     }
 
     .start-title {
-      width: min(330px, 92vw);
-      margin: 0;
       position: absolute;
-      top: calc(21.4svh + var(--safe-top));
+      top: calc(20.5svh + var(--safe-top));
       left: 50%;
       transform: translateX(-50%);
-      font-size: clamp(28px, 7.15vw, 32px);
+      width: min(340px, 92vw);
+      margin: 0;
+      font-size: clamp(26px, 6.8vw, 31px);
       line-height: 0.92;
       letter-spacing: -0.04em;
-      text-transform: uppercase;
       text-wrap: balance;
-      filter: drop-shadow(0 7px 14px rgba(0, 0, 0, 0.22));
+      text-shadow: 0 4px 18px rgba(0, 0, 0, 0.28);
     }
 
     .start-button {
       position: absolute;
       left: 50%;
-      top: calc(46.6svh + var(--safe-top));
+      top: calc(46.5svh + var(--safe-top));
       transform: translateX(-50%);
       width: min(260px, 68vw);
       aspect-ratio: 817 / 348;
-      background-image: url("./button.png");
-      background-size: 100% 100%;
-      background-position: center;
-      background-repeat: no-repeat;
-      cursor: pointer;
-      touch-action: manipulation;
+      background: url("./button.png") center / 100% 100% no-repeat;
+      filter: drop-shadow(0 0 20px var(--lime-glow));
       transition: transform 150ms ease, filter 150ms ease;
+    }
+
+    .start-title,
+    .start-button span,
+    .quiz-title,
+    .mic-label,
+    .answer-btn,
+    .final-name,
+    .final-love,
+    .final-birthday,
+    .final-credits {
+      text-transform: uppercase;
     }
 
     .start-button span {
       position: relative;
       top: -1px;
       display: block;
-      font-size: clamp(24px, 6.3vw, 29px);
+      font-size: clamp(24px, 6.2vw, 29px);
       line-height: 1;
       color: var(--white);
-      text-transform: uppercase;
       letter-spacing: -0.045em;
-      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
     }
 
     .start-button:active {
       transform: translateX(-50%) scale(0.965);
-      filter: brightness(0.97);
     }
 
-    .quiz-screen,
-    .result-screen {
+    /* —— Вопросы —— */
+    .quiz-screen {
       flex-direction: column;
-      justify-content: center;
       align-items: center;
-      text-align: center;
-      gap: 22px;
+      padding:
+        calc(11svh + var(--safe-top))
+        calc(18px + var(--safe-right))
+        calc(22px + var(--safe-bottom))
+        calc(18px + var(--safe-left));
     }
 
-    .quiz-card,
-    .result-card {
-      width: min(340px, 100%);
-      min-height: 430px;
-      padding: 28px 22px;
-      border-radius: 30px;
-      background: rgba(5, 15, 39, 0.46);
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      box-shadow: 0 20px 70px rgba(0, 0, 0, 0.26);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
+    .quiz-screen.has-mascot {
+      padding-bottom: calc(8px + var(--safe-bottom));
+    }
+
+    .quiz-title {
+      margin: 0 0 0;
+      width: min(340px, 92vw);
+      font-size: clamp(24px, 6.4vw, 30px);
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+      text-align: center;
+      text-transform: uppercase;
+      text-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+      flex-shrink: 0;
+    }
+
+    .quiz-title--two-line {
+      line-height: 0.92;
+    }
+
+    .quiz-body {
+      flex: 1;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      gap: 18px;
-    }
-
-    .progress-label {
-      font-size: 15px;
-      line-height: 1;
-      opacity: 0.78;
-      text-transform: uppercase;
-    }
-
-    .progress {
+      align-items: center;
       width: 100%;
-      height: 8px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.18);
-      overflow: hidden;
-      margin-top: 10px;
-    }
-
-    .progress-bar {
-      width: 0%;
-      height: 100%;
-      border-radius: inherit;
-      background: var(--lime);
-      transition: width 260ms ease;
-    }
-
-    .question {
-      margin: 0;
-      font-size: clamp(27px, 7vw, 34px);
-      line-height: 0.98;
-      letter-spacing: -0.045em;
-      text-transform: uppercase;
+      min-height: 0;
+      margin-top: clamp(24px, 5svh, 40px);
     }
 
     .answers {
-      display: grid;
-      gap: 12px;
-      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: clamp(10px, 2.2svh, 14px);
+      width: min(340px, 88vw);
     }
 
-    .answer-button,
-    .restart-button {
+    .answer-btn {
       width: 100%;
-      min-height: 58px;
-      padding: 15px 18px;
-      border-radius: 19px;
-      background: rgba(220, 234, 75, 0.95);
-      color: #ffffff;
-      font-size: 23px;
+      min-height: 56px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: var(--lime);
+      color: var(--white);
+      font-size: clamp(20px, 5.2vw, 24px);
       line-height: 0.95;
+      letter-spacing: -0.04em;
       text-transform: uppercase;
-      letter-spacing: -0.045em;
-      box-shadow: 0 0 20px rgba(220, 234, 75, 0.26);
-      cursor: pointer;
-      touch-action: manipulation;
-      transition: transform 150ms ease, filter 150ms ease;
+      text-align: center;
+      box-shadow:
+        0 0 22px var(--lime-glow),
+        0 4px 12px rgba(0, 0, 0, 0.15);
+      transition: transform 150ms ease;
     }
 
-    .answer-button:active,
-    .restart-button:active {
+    .answer-btn--multiline {
+      padding: 12px 14px;
+      font-size: clamp(18px, 4.8vw, 22px);
+      line-height: 0.92;
+    }
+
+    .answer-btn:active {
       transform: scale(0.975);
-      filter: brightness(0.96);
     }
 
-    .result-title {
+    .answers--three {
+      gap: clamp(12px, 2.5svh, 16px);
+    }
+
+    /* —— Выбор микрофона —— */
+    .mic-screen {
+      padding-top: calc(10svh + var(--safe-top));
+    }
+
+    .mic-options {
+      gap: clamp(36px, 9svh, 56px);
+      margin-top: clamp(28px, 6svh, 44px);
+    }
+
+    .mic-row {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      max-width: 390px;
+      gap: 8px;
+      padding: 4px 0;
+    }
+
+    .mic-row--neumann {
+      justify-content: flex-start;
+      padding-left: clamp(0px, 2vw, 12px);
+    }
+
+    .mic-row--shure {
+      justify-content: flex-end;
+      padding-right: clamp(0px, 2vw, 8px);
+    }
+
+    .mic-row img {
+      display: block;
+      height: auto;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+
+    .mic-row--neumann img {
+      width: min(168px, 44vw);
+      margin-right: 4px;
+    }
+
+    .mic-row--shure img {
+      width: min(155px, 40vw);
+      margin-left: 4px;
+    }
+
+    .mic-label {
+      font-size: clamp(28px, 7.5vw, 36px);
+      line-height: 1;
+      letter-spacing: -0.04em;
+      text-transform: uppercase;
+      text-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
+      flex-shrink: 0;
+    }
+
+    .mic-row--neumann .mic-label {
+      flex: 1;
+      text-align: left;
+      padding-left: 8px;
+    }
+
+    .mic-row--shure .mic-label {
+      flex: 1;
+      text-align: right;
+      padding-right: 12px;
+    }
+
+    /* —— Последний вопрос + персонаж —— */
+    .mascot {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      width: min(72vw, 300px);
+      max-height: 52svh;
+      object-fit: contain;
+      object-position: right bottom;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* —— Финал —— */
+    .final-screen {
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      text-align: center;
+      padding:
+        calc(14svh + var(--safe-top))
+        calc(24px + var(--safe-right))
+        calc(16px + var(--safe-bottom))
+        calc(24px + var(--safe-left));
+    }
+
+    .final-top {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: clamp(6px, 1.5svh, 10px);
+    }
+
+    .final-name {
       margin: 0;
-      font-size: clamp(32px, 8vw, 40px);
+      font-size: clamp(36px, 9.5vw, 44px);
       line-height: 0.95;
-      letter-spacing: -0.045em;
+      letter-spacing: -0.04em;
       text-transform: uppercase;
     }
 
-    .result-text {
+    .final-love {
       margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      font-weight: 700;
-      font-size: 16px;
-      line-height: 1.35;
-      color: rgba(255, 255, 255, 0.84);
+      font-size: clamp(22px, 5.8vw, 27px);
+      line-height: 0.92;
+      letter-spacing: -0.04em;
+      text-transform: uppercase;
+    }
+
+    .final-heart {
+      width: min(120px, 32vw);
+      height: auto;
+      display: block;
+      filter: drop-shadow(0 0 18px var(--lime-glow));
+    }
+
+    .final-birthday {
+      margin: 0;
+      font-size: clamp(26px, 6.8vw, 32px);
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+      text-transform: uppercase;
+    }
+
+    .final-credits {
+      margin: 0;
+      font-size: clamp(14px, 3.8vw, 17px);
+      line-height: 1;
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+      opacity: 0.95;
     }
 
     @keyframes screenIn {
@@ -254,25 +386,25 @@
       }
     }
 
-    @media (min-width: 600px) {
-      .app {
-        width: min(430px, 100vw);
-        margin: 0 auto;
-      }
-    }
-
-    @media (max-height: 730px) {
+    @media (max-height: 700px) {
       .start-title {
-        top: calc(18svh + var(--safe-top));
+        top: calc(17svh + var(--safe-top));
       }
 
       .start-button {
-        top: calc(45svh + var(--safe-top));
+        top: calc(44svh + var(--safe-top));
       }
 
-      .quiz-card,
-      .result-card {
-        min-height: 390px;
+      .quiz-screen {
+        padding-top: calc(8svh + var(--safe-top));
+      }
+
+      .mic-options {
+        gap: 28px;
+      }
+
+      .final-screen {
+        padding-top: calc(10svh + var(--safe-top));
       }
     }
   </style>
@@ -282,143 +414,187 @@
   <main class="app">
     <section class="screen start-screen active" id="startScreen">
       <h1 class="start-title">Помоги Леше<br>настроить микрофон</h1>
-
       <button class="start-button" id="startButton" type="button" aria-label="Начать">
         <span>Начать</span>
       </button>
     </section>
 
-    <section class="screen quiz-screen" id="quizScreen">
-      <div class="quiz-card">
-        <div>
-          <div class="progress-label" id="progressLabel">Вопрос 1 из 3</div>
-          <div class="progress">
-            <div class="progress-bar" id="progressBar"></div>
-          </div>
-        </div>
+    <section class="screen quiz-screen" id="quizScreen" aria-live="polite"></section>
 
-        <h2 class="question" id="questionText"></h2>
-        <div class="answers" id="answers"></div>
+    <section class="screen final-screen" id="finalScreen">
+      <div class="final-top">
+        <h2 class="final-name">Леша</h2>
+        <p class="final-love">Мы тебя очень<br>любим</p>
       </div>
-    </section>
-
-    <section class="screen result-screen" id="resultScreen">
-      <div class="result-card">
-        <h2 class="result-title" id="resultTitle"></h2>
-        <p class="result-text" id="resultText"></p>
-        <button class="restart-button" id="restartButton" type="button">Еще раз</button>
-      </div>
+      <img class="final-heart" src="./heart.png" width="120" height="120" alt="" />
+      <p class="final-birthday">Happy Birthday</p>
+      <p class="final-credits">By Shimo x Sasha</p>
     </section>
   </main>
 
   <script>
-    const questions = [
+    const steps = [
+      { type: "mic" },
       {
-        question: "Что первым делом надо сделать с микрофоном?",
+        type: "buttons",
+        title: "Ты только включил майк. Что скажешь?",
         answers: [
-          { text: "Включить", correct: true },
-          { text: "Постучать", correct: false },
-          { text: "Паниковать", correct: false }
+          "Распрас",
+          "Ц-ц-ц",
+          { lines: ["Подпоешь", "фоновой песне"], multiline: true },
+          "Саня"
         ]
       },
       {
-        question: "Если микрофон фонит, кто виноват?",
+        type: "buttons",
+        title: "Выбери песню для отстройки",
         answers: [
-          { text: "Кабель", correct: false },
-          { text: "Леша", correct: true },
-          { text: "Меркурий", correct: false }
+          { lines: ["Опиум для", "никого"], multiline: true },
+          { lines: ["Опиум для", "никого"], multiline: true },
+          { lines: ["Опиум для", "никого"], multiline: true },
+          { lines: ["Опиум для", "никого"], multiline: true }
         ]
       },
       {
-        question: "Что сказать в микрофон?",
+        type: "buttons",
+        title: "Майк фонит. Кто виноват?",
+        answers: ["Саша", "Костя", "Индига", "Не я"]
+      },
+      {
+        type: "buttons",
+        title: "Что скажешь после первой песни?",
         answers: [
-          { text: "Раз-раз", correct: true },
-          { text: "Алло гараж", correct: false },
-          { text: "Я звезда", correct: false }
+          "Сань, ревера нет вообще",
+          "Он меня не тянет",
+          "Звук как из бочки",
+          "Хочется нижней серединки"
         ]
+      },
+      {
+        type: "buttons",
+        title: "Кто виноват в плохом звуке?",
+        answers: ["Компрессор", "Эквалайзер", "Ревер", "Диэссер"]
+      },
+      {
+        type: "buttons",
+        title: "Базовая фраза?",
+        answers: [
+          "Добрый вечер",
+          { lines: ["Не очень плотный", "добрый вечер"], multiline: true },
+          "Костян, давай",
+          "Ы :)"
+        ]
+      },
+      {
+        type: "buttons",
+        title: ["Последний вопрос...", "Кто больше секси?"],
+        answers: ["Grandma3", "Yamaha DM7", "Индига"],
+        mascot: true
       }
     ];
 
-    let currentQuestion = 0;
-    let score = 0;
+    let stepIndex = 0;
 
     const startScreen = document.getElementById("startScreen");
     const quizScreen = document.getElementById("quizScreen");
-    const resultScreen = document.getElementById("resultScreen");
-
+    const finalScreen = document.getElementById("finalScreen");
     const startButton = document.getElementById("startButton");
-    const restartButton = document.getElementById("restartButton");
-
-    const progressLabel = document.getElementById("progressLabel");
-    const progressBar = document.getElementById("progressBar");
-    const questionText = document.getElementById("questionText");
-    const answers = document.getElementById("answers");
-
-    const resultTitle = document.getElementById("resultTitle");
-    const resultText = document.getElementById("resultText");
 
     function showScreen(screen) {
-      startScreen.classList.remove("active");
-      quizScreen.classList.remove("active");
-      resultScreen.classList.remove("active");
+      [startScreen, quizScreen, finalScreen].forEach((s) => s.classList.remove("active"));
       screen.classList.add("active");
     }
 
-    function startQuiz() {
-      currentQuestion = 0;
-      score = 0;
-      showQuestion();
-      showScreen(quizScreen);
+    function toUpperDisplay(text) {
+      return text.toLocaleUpperCase("ru-RU");
     }
 
-    function showQuestion() {
-      const q = questions[currentQuestion];
-
-      progressLabel.textContent = `Вопрос ${currentQuestion + 1} из ${questions.length}`;
-      progressBar.style.width = `${((currentQuestion + 1) / questions.length) * 100}%`;
-      questionText.textContent = q.question;
-      answers.innerHTML = "";
-
-      q.answers.forEach((answer) => {
-        const button = document.createElement("button");
-        button.className = "answer-button";
-        button.type = "button";
-        button.textContent = answer.text;
-
-        button.addEventListener("click", () => {
-          if (answer.correct) score += 1;
-          currentQuestion += 1;
-
-          if (currentQuestion < questions.length) {
-            showQuestion();
-          } else {
-            showResult();
-          }
-        });
-
-        answers.appendChild(button);
+    function renderMic() {
+      quizScreen.className = "screen quiz-screen mic-screen active";
+      quizScreen.innerHTML = `
+        <h2 class="quiz-title">Выбери микрофон</h2>
+        <div class="quiz-body mic-options">
+          <button type="button" class="mic-row mic-row--neumann" data-next>
+            <img src="./neumann.png" alt="" width="168" height="168" />
+            <span class="mic-label">Neumann</span>
+          </button>
+          <button type="button" class="mic-row mic-row--shure" data-next>
+            <span class="mic-label">Shure</span>
+            <img src="./shure55.png" alt="" width="155" height="155" />
+          </button>
+        </div>
+      `;
+      quizScreen.querySelectorAll("[data-next]").forEach((btn) => {
+        btn.addEventListener("click", goNext);
       });
     }
 
-    function showResult() {
-      const percent = Math.round((score / questions.length) * 100);
+    function renderButtons(step) {
+      const twoLines = Array.isArray(step.title);
+      const titleHtml = twoLines
+        ? step.title.map((line) => toUpperDisplay(line)).join("<br>")
+        : toUpperDisplay(step.title);
 
-      if (percent === 100) {
-        resultTitle.textContent = "Микрофон настроен";
-        resultText.textContent = `Результат: ${score}/${questions.length}. Леша готов к эфиру.`;
-      } else if (percent >= 60) {
-        resultTitle.textContent = "Почти готово";
-        resultText.textContent = `Результат: ${score}/${questions.length}. Осталось чуть-чуть подкрутить гейн.`;
-      } else {
-        resultTitle.textContent = "Нужен саундчек";
-        resultText.textContent = `Результат: ${score}/${questions.length}. Микрофон пока в опасности.`;
+      const three = step.answers.length === 3;
+      const mascot = step.mascot
+        ? '<img class="mascot" src="./indigo.png" alt="" />'
+        : "";
+
+      quizScreen.className =
+        "screen quiz-screen active" + (step.mascot ? " has-mascot" : "");
+
+      const buttonsHtml = step.answers
+        .map((answer) => {
+          if (typeof answer === "string") {
+            return `<button type="button" class="answer-btn" data-next>${toUpperDisplay(answer)}</button>`;
+          }
+          const cls = answer.multiline ? " answer-btn--multiline" : "";
+          const inner = answer.lines.map((l) => toUpperDisplay(l)).join("<br>");
+          return `<button type="button" class="answer-btn${cls}" data-next>${inner}</button>`;
+        })
+        .join("");
+
+      quizScreen.innerHTML = `
+        <h2 class="quiz-title${twoLines ? " quiz-title--two-line" : ""}">${titleHtml}</h2>
+        <div class="quiz-body">
+          <div class="answers${three ? " answers--three" : ""}">${buttonsHtml}</div>
+        </div>
+        ${mascot}
+      `;
+
+      quizScreen.querySelectorAll("[data-next]").forEach((btn) => {
+        btn.addEventListener("click", goNext);
+      });
+    }
+
+    function renderStep() {
+      const step = steps[stepIndex];
+      if (step.type === "mic") {
+        renderMic();
+        return;
       }
+      if (step.type === "buttons") {
+        renderButtons(step);
+      }
+    }
 
-      showScreen(resultScreen);
+    function goNext() {
+      stepIndex += 1;
+      if (stepIndex < steps.length) {
+        renderStep();
+        showScreen(quizScreen);
+        return;
+      }
+      showScreen(finalScreen);
+    }
+
+    function startQuiz() {
+      stepIndex = 0;
+      renderStep();
+      showScreen(quizScreen);
     }
 
     startButton.addEventListener("click", startQuiz);
-    restartButton.addEventListener("click", startQuiz);
   </script>
 </body>
 </html>
