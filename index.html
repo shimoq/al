@@ -169,6 +169,11 @@
       padding-bottom: calc(8px + var(--safe-bottom));
     }
 
+    .quiz-screen.has-mascot .quiz-body {
+      position: relative;
+      z-index: 3;
+    }
+
     .quiz-title {
       margin: 0 0 0;
       width: min(340px, 92vw);
@@ -305,14 +310,36 @@
     /* —— Последний вопрос + персонаж —— */
     .mascot {
       position: absolute;
-      right: 0;
-      bottom: 0;
-      width: min(72vw, 300px);
-      max-height: 52svh;
+      right: clamp(-8px, -1vw, 0px);
+      bottom: calc(var(--safe-bottom) - 4px);
+      width: min(52vw, 210px);
+      max-height: 36svh;
       object-fit: contain;
       object-position: right bottom;
       pointer-events: none;
       z-index: 2;
+      transform: translateY(110%);
+      opacity: 0;
+      animation: mascotRise 1.4s cubic-bezier(0.22, 1, 0.36, 1) 0.15s forwards;
+    }
+
+    @keyframes mascotRise {
+      from {
+        transform: translateY(110%);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .mascot {
+        animation: none;
+        transform: none;
+        opacity: 1;
+      }
     }
 
     /* —— Финал —— */
@@ -439,7 +466,7 @@
         type: "buttons",
         title: "Ты только включил майк. Что скажешь?",
         answers: [
-          "Распрас",
+          "Рас-рас",
           "Ц-ц-ц",
           { lines: ["Подпоешь", "фоновой песне"], multiline: true },
           "Саня"
@@ -537,7 +564,7 @@
 
       const three = step.answers.length === 3;
       const mascot = step.mascot
-        ? '<img class="mascot" src="./indigo.png" alt="" />'
+        ? '<img class="mascot" src="./indigo.png" alt="" width="210" height="210" />'
         : "";
 
       quizScreen.className =
