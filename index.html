@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="format-detection" content="telephone=no" />
+  <title>Помоги Леше настроить микрофон</title>
+
+  <style>
+    @font-face {
+      font-family: "Intro Friday";
+      src: url("./INTROFRIDAY.TTF") format("truetype");
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    :root {
+      --white: #ffffff;
+      --lime: #dcea4b;
+      --safe-top: env(safe-area-inset-top);
+      --safe-bottom: env(safe-area-inset-bottom);
+      --safe-left: env(safe-area-inset-left);
+      --safe-right: env(safe-area-inset-right);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html,
+    body {
+      margin: 0;
+      width: 100%;
+      min-height: 100%;
+      overflow: hidden;
+      background: #07122c;
+      color: var(--white);
+      font-family: "Intro Friday", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      min-height: 100svh;
+      position: fixed;
+      inset: 0;
+    }
+
+    button {
+      border: 0;
+      padding: 0;
+      font: inherit;
+      color: inherit;
+      background: none;
+    }
+
+    .app {
+      position: relative;
+      width: 100%;
+      min-height: 100svh;
+      overflow: hidden;
+      background-image: url("./BG.png");
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
+    }
+
+    .screen {
+      position: absolute;
+      inset: 0;
+      display: none;
+      width: 100%;
+      min-height: 100svh;
+      padding:
+        calc(28px + var(--safe-top))
+        calc(24px + var(--safe-right))
+        calc(28px + var(--safe-bottom))
+        calc(24px + var(--safe-left));
+      animation: screenIn 420ms ease both;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    .start-screen {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .start-title {
+      width: min(330px, 92vw);
+      margin: 0;
+      position: absolute;
+      top: calc(21.4svh + var(--safe-top));
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: clamp(28px, 7.15vw, 32px);
+      line-height: 0.92;
+      letter-spacing: -0.04em;
+      text-transform: uppercase;
+      text-wrap: balance;
+      filter: drop-shadow(0 7px 14px rgba(0, 0, 0, 0.22));
+    }
+
+    .start-button {
+      position: absolute;
+      left: 50%;
+      top: calc(46.6svh + var(--safe-top));
+      transform: translateX(-50%);
+      width: min(260px, 68vw);
+      aspect-ratio: 817 / 348;
+      background-image: url("./button.png");
+      background-size: 100% 100%;
+      background-position: center;
+      background-repeat: no-repeat;
+      cursor: pointer;
+      touch-action: manipulation;
+      transition: transform 150ms ease, filter 150ms ease;
+    }
+
+    .start-button span {
+      position: relative;
+      top: -1px;
+      display: block;
+      font-size: clamp(24px, 6.3vw, 29px);
+      line-height: 1;
+      color: var(--white);
+      text-transform: uppercase;
+      letter-spacing: -0.045em;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+    }
+
+    .start-button:active {
+      transform: translateX(-50%) scale(0.965);
+      filter: brightness(0.97);
+    }
+
+    .quiz-screen,
+    .result-screen {
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      gap: 22px;
+    }
+
+    .quiz-card,
+    .result-card {
+      width: min(340px, 100%);
+      min-height: 430px;
+      padding: 28px 22px;
+      border-radius: 30px;
+      background: rgba(5, 15, 39, 0.46);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      box-shadow: 0 20px 70px rgba(0, 0, 0, 0.26);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 18px;
+    }
+
+    .progress-label {
+      font-size: 15px;
+      line-height: 1;
+      opacity: 0.78;
+      text-transform: uppercase;
+    }
+
+    .progress {
+      width: 100%;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.18);
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--lime);
+      transition: width 260ms ease;
+    }
+
+    .question {
+      margin: 0;
+      font-size: clamp(27px, 7vw, 34px);
+      line-height: 0.98;
+      letter-spacing: -0.045em;
+      text-transform: uppercase;
+    }
+
+    .answers {
+      display: grid;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .answer-button,
+    .restart-button {
+      width: 100%;
+      min-height: 58px;
+      padding: 15px 18px;
+      border-radius: 19px;
+      background: rgba(220, 234, 75, 0.95);
+      color: #ffffff;
+      font-size: 23px;
+      line-height: 0.95;
+      text-transform: uppercase;
+      letter-spacing: -0.045em;
+      box-shadow: 0 0 20px rgba(220, 234, 75, 0.26);
+      cursor: pointer;
+      touch-action: manipulation;
+      transition: transform 150ms ease, filter 150ms ease;
+    }
+
+    .answer-button:active,
+    .restart-button:active {
+      transform: scale(0.975);
+      filter: brightness(0.96);
+    }
+
+    .result-title {
+      margin: 0;
+      font-size: clamp(32px, 8vw, 40px);
+      line-height: 0.95;
+      letter-spacing: -0.045em;
+      text-transform: uppercase;
+    }
+
+    .result-text {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-weight: 700;
+      font-size: 16px;
+      line-height: 1.35;
+      color: rgba(255, 255, 255, 0.84);
+    }
+
+    @keyframes screenIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (min-width: 600px) {
+      .app {
+        width: min(430px, 100vw);
+        margin: 0 auto;
+      }
+    }
+
+    @media (max-height: 730px) {
+      .start-title {
+        top: calc(18svh + var(--safe-top));
+      }
+
+      .start-button {
+        top: calc(45svh + var(--safe-top));
+      }
+
+      .quiz-card,
+      .result-card {
+        min-height: 390px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="app">
+    <section class="screen start-screen active" id="startScreen">
+      <h1 class="start-title">Помоги Леше<br>настроить микрофон</h1>
+
+      <button class="start-button" id="startButton" type="button" aria-label="Начать">
+        <span>Начать</span>
+      </button>
+    </section>
+
+    <section class="screen quiz-screen" id="quizScreen">
+      <div class="quiz-card">
+        <div>
+          <div class="progress-label" id="progressLabel">Вопрос 1 из 3</div>
+          <div class="progress">
+            <div class="progress-bar" id="progressBar"></div>
+          </div>
+        </div>
+
+        <h2 class="question" id="questionText"></h2>
+        <div class="answers" id="answers"></div>
+      </div>
+    </section>
+
+    <section class="screen result-screen" id="resultScreen">
+      <div class="result-card">
+        <h2 class="result-title" id="resultTitle"></h2>
+        <p class="result-text" id="resultText"></p>
+        <button class="restart-button" id="restartButton" type="button">Еще раз</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const questions = [
+      {
+        question: "Что первым делом надо сделать с микрофоном?",
+        answers: [
+          { text: "Включить", correct: true },
+          { text: "Постучать", correct: false },
+          { text: "Паниковать", correct: false }
+        ]
+      },
+      {
+        question: "Если микрофон фонит, кто виноват?",
+        answers: [
+          { text: "Кабель", correct: false },
+          { text: "Леша", correct: true },
+          { text: "Меркурий", correct: false }
+        ]
+      },
+      {
+        question: "Что сказать в микрофон?",
+        answers: [
+          { text: "Раз-раз", correct: true },
+          { text: "Алло гараж", correct: false },
+          { text: "Я звезда", correct: false }
+        ]
+      }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    const startScreen = document.getElementById("startScreen");
+    const quizScreen = document.getElementById("quizScreen");
+    const resultScreen = document.getElementById("resultScreen");
+
+    const startButton = document.getElementById("startButton");
+    const restartButton = document.getElementById("restartButton");
+
+    const progressLabel = document.getElementById("progressLabel");
+    const progressBar = document.getElementById("progressBar");
+    const questionText = document.getElementById("questionText");
+    const answers = document.getElementById("answers");
+
+    const resultTitle = document.getElementById("resultTitle");
+    const resultText = document.getElementById("resultText");
+
+    function showScreen(screen) {
+      startScreen.classList.remove("active");
+      quizScreen.classList.remove("active");
+      resultScreen.classList.remove("active");
+      screen.classList.add("active");
+    }
+
+    function startQuiz() {
+      currentQuestion = 0;
+      score = 0;
+      showQuestion();
+      showScreen(quizScreen);
+    }
+
+    function showQuestion() {
+      const q = questions[currentQuestion];
+
+      progressLabel.textContent = `Вопрос ${currentQuestion + 1} из ${questions.length}`;
+      progressBar.style.width = `${((currentQuestion + 1) / questions.length) * 100}%`;
+      questionText.textContent = q.question;
+      answers.innerHTML = "";
+
+      q.answers.forEach((answer) => {
+        const button = document.createElement("button");
+        button.className = "answer-button";
+        button.type = "button";
+        button.textContent = answer.text;
+
+        button.addEventListener("click", () => {
+          if (answer.correct) score += 1;
+          currentQuestion += 1;
+
+          if (currentQuestion < questions.length) {
+            showQuestion();
+          } else {
+            showResult();
+          }
+        });
+
+        answers.appendChild(button);
+      });
+    }
+
+    function showResult() {
+      const percent = Math.round((score / questions.length) * 100);
+
+      if (percent === 100) {
+        resultTitle.textContent = "Микрофон настроен";
+        resultText.textContent = `Результат: ${score}/${questions.length}. Леша готов к эфиру.`;
+      } else if (percent >= 60) {
+        resultTitle.textContent = "Почти готово";
+        resultText.textContent = `Результат: ${score}/${questions.length}. Осталось чуть-чуть подкрутить гейн.`;
+      } else {
+        resultTitle.textContent = "Нужен саундчек";
+        resultText.textContent = `Результат: ${score}/${questions.length}. Микрофон пока в опасности.`;
+      }
+
+      showScreen(resultScreen);
+    }
+
+    startButton.addEventListener("click", startQuiz);
+    restartButton.addEventListener("click", startQuiz);
+  </script>
+</body>
+</html>
